@@ -56,7 +56,9 @@ def plateau_de_jeu_9(version, taille_fenetre):
                                 couleur='black',
                                 remplissage='black')
 
-                liste_points_possibles.append((x, y))
+                    liste_points_possibles.append((x, y))
+
+
 
     print(liste_points_possibles)
     return liste_points_possibles
