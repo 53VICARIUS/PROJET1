@@ -2,7 +2,6 @@ import fltk
 
 
 def plateau_de_jeu_9(version, taille_fenetre):
-
     '''
     Pour taille_fenetre = 600 :
     taille_fenetre // 2 = 300
@@ -20,11 +19,11 @@ def plateau_de_jeu_9(version, taille_fenetre):
     fltk.ligne(taille_fenetre // 2, 0, taille_fenetre // 2,
                taille_fenetre // 3,
                epaisseur=epaisseur_trait,
-               couleur="blue")
+               couleur="black")
     fltk.ligne(0, taille_fenetre // 2, taille_fenetre // 3,
                taille_fenetre // 2,
                epaisseur=epaisseur_trait,
-               couleur="red")
+               couleur="black")
     fltk.ligne(taille_fenetre, taille_fenetre // 2, (taille_fenetre // 3) * 2,
                taille_fenetre // 2,
                epaisseur=epaisseur_trait,
@@ -32,7 +31,7 @@ def plateau_de_jeu_9(version, taille_fenetre):
     fltk.ligne(taille_fenetre // 2, taille_fenetre, taille_fenetre // 2,
                (taille_fenetre // 3) * 2,
                epaisseur=epaisseur_trait,
-               couleur="yellow")
+               couleur="black")
 
     # 200, 100 etc sont des valeurs obtenues en divisant taille_fenetre par
     # 3 ou 6 (car taille_fenetre == 600) et doivent être remplacée par des
@@ -58,28 +57,45 @@ def plateau_de_jeu_9(version, taille_fenetre):
 
                     liste_points_possibles.append((x, y))
 
-
-
     print(liste_points_possibles)
     return liste_points_possibles
 
 
-def intersection(liste_points_possibles, ev):
+def intersection_survolee(liste_points_possibles):
 
     rayon = 5
 
     for i in range(len(liste_points_possibles)):
         x_point, y_point = liste_points_possibles[i]
 
-        if fltk.abscisse(ev) > x_point - rayon \
+        if fltk.abscisse_souris() > x_point - rayon \
         and fltk.ordonnee_souris() > y_point - rayon \
-        and fltk.abscisse(ev) < x_point + rayon \
+        and fltk.abscisse_souris() < x_point + rayon \
         and fltk.ordonnee_souris() < y_point + rayon:
+
+            fltk.cercle(x_point, y_point, rayon,
+                        couleur='blue',
+                        remplissage='blue',
+                        tag='point_survolé')
+
+def efface_intersection_survolee():
+    fltk.efface('point_survolé')
+
+
+def intersection(liste_points_possibles, ev):
+    rayon = 5
+
+    for i in range(len(liste_points_possibles)):
+        x_point, y_point = liste_points_possibles[i]
+
+        if fltk.abscisse(ev) > x_point - rayon \
+        and fltk.ordonnee(ev) > y_point - rayon \
+        and fltk.abscisse(ev) < x_point + rayon \
+        and fltk.ordonnee(ev) < y_point + rayon:
             print('intersection')
 
 
 def affichage():
-
     taille_fenetre = 600
     fltk.cree_fenetre(taille_fenetre, taille_fenetre)
     # Pour le fond
@@ -91,6 +107,9 @@ def affichage():
     while continuer:
         ev = fltk.donne_ev()
         tev = fltk.type_ev(ev)
+
+        efface_intersection_survolee()
+        intersection_survolee(liste_points_possibles)
 
         if tev == "Quitte":
             continuer = False
