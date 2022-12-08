@@ -2,11 +2,9 @@ import fltk
 from variables import *
 
 
-def plateau_de_jeu_9(version, taille_plateau):
+def plateau_de_jeu_9(version):
 
     liste_points_possibles = []
-    rayon_intersection = 5
-    epaisseur_trait = 3
 
     # Création des lignes
     fltk.ligne(FENETRE_X // 3,
@@ -34,10 +32,6 @@ def plateau_de_jeu_9(version, taille_plateau):
                epaisseur=epaisseur_trait,
                couleur="black")
 
-
-    # 200, 100 etc sont des valeurs obtenues en divisant taille_plateau par
-    # 3 ou 6 (car taille_plateau == 600) et doivent être remplacée par des
-    # variables
     for p in range(0, taille_plateau // 3 + 1, taille_plateau // 6):
 
         # Création des carrés : 'range(3)' pour trois carrés
@@ -46,7 +40,7 @@ def plateau_de_jeu_9(version, taille_plateau):
                            FENETRE_Y // 5 + p,
                            FENETRE_X // 3 + taille_plateau - p,
                            FENETRE_Y // 5 + taille_plateau - p,
-                           epaisseur=3)
+                           epaisseur=epaisseur_trait)
 
         for x in range(FENETRE_X // 3 + p, FENETRE_X // 3 + taille_plateau - p + 1,
                        taille_plateau // 2 - p):
@@ -73,38 +67,36 @@ def tour_joueur():
     dd = 2
 
 
-
-def intersection_survolee(liste_points_possibles):
+def intersection(liste_points_possibles, tev):
 
     for i in range(len(liste_points_possibles)):
         x_point, y_point = liste_points_possibles[i]
 
-        if fltk.abscisse_souris() > x_point - rayon_intersection \
-        and fltk.ordonnee_souris() > y_point - rayon_intersection \
-        and fltk.abscisse_souris() < x_point + rayon_intersection \
-        and fltk.ordonnee_souris() < y_point + rayon_intersection:
-
+        if intersection_survolee(x_point, y_point):
             fltk.cercle(x_point, y_point, rayon_intersection,
                         couleur='blue',
                         remplissage='blue',
                         tag='point_survolé')
 
+            if tev == "ClicGauche":
+                print("clic")
+
+
+            return True
+
+
 def efface_intersection_survolee():
     fltk.efface('point_survolé')
 
 
-def intersection(liste_points_possibles, ev):
+def intersection_survolee(x_point, y_point):
+    if fltk.abscisse_souris() > x_point - rayon_intersection \
+    and fltk.ordonnee_souris() > y_point - rayon_intersection \
+    and fltk.abscisse_souris() < x_point + rayon_intersection \
+    and fltk.ordonnee_souris() < y_point + rayon_intersection:
+        return True
 
-
-    for i in range(len(liste_points_possibles)):
-        x_point, y_point = liste_points_possibles[i]
-
-        if fltk.abscisse(ev) > x_point - rayon_intersection \
-        and fltk.ordonnee(ev) > y_point - rayon_intersection \
-        and fltk.abscisse(ev) < x_point + rayon_intersection \
-        and fltk.ordonnee(ev) < y_point + rayon_intersection:
-
-            print('intersection')
+    return False
 
 
 def affichage():
@@ -113,7 +105,7 @@ def affichage():
     # Pour le fond
     fltk.rectangle(-10, -10, 9000, 9000, remplissage='#bababa')
 
-    liste_points_possibles = plateau_de_jeu_9('A', taille_plateau)
+    liste_points_possibles = plateau_de_jeu_9('A')
 
     continuer = True
     while continuer:
@@ -121,14 +113,11 @@ def affichage():
         tev = fltk.type_ev(ev)
 
         efface_intersection_survolee()
-        intersection_survolee(liste_points_possibles)
+        intersection(liste_points_possibles, tev)
 
         if tev == "Quitte":
             continuer = False
 
-        if tev == "ClicGauche":
-            intersection(liste_points_possibles, ev)
-            print(fltk.abscisse(ev), fltk.ordonnee(ev))
 
         fltk.mise_a_jour()
     fltk.ferme_fenetre()

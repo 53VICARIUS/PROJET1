@@ -64,7 +64,7 @@ def plateau_de_jeu_9(version, taille_fenetre):
 def intersection_survolee(liste_points_possibles):
 
     for i in range(len(liste_points_possibles)):
-        x_point, y_point = liste_points_possibles[i]          # A MODIFIER? appel de la fonction intersection() ?
+        x_point, y_point = liste_points_possibles[i] # A MODIFIER? appel de la fonction intersection() ?
         if collision(x_point, y_point):
             fltk.cercle(x_point, y_point, rayon,
                         couleur='blue',
