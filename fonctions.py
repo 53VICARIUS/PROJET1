@@ -85,8 +85,7 @@ def intersection(liste_points_possibles, tour_jeu, tev):
                         tag='point_survolé')
 
             if tev == "ClicGauche":
-                joueur = 'black'
-                # joueur = tour_joueur(tour_jeu)
+                joueur = tour_joueur(tour_jeu)
                 fltk.cercle(x_point, y_point, rayon_pion,
                             couleur=joueur,
                             remplissage=joueur,
@@ -94,9 +93,9 @@ def intersection(liste_points_possibles, tour_jeu, tev):
 
                 print(x_point, y_point)
 
-                # tour_jeu += 1
+                tour_jeu += 1
 
-            return tour_jeu
+    return tour_jeu
 
 
 
@@ -125,6 +124,7 @@ def affichage():
     liste_points_possibles = plateau_de_jeu_9('A')
 
     continuer = True
+
     while continuer:
         ev = fltk.donne_ev()
         tev = fltk.type_ev(ev)
