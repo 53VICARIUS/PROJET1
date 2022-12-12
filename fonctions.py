@@ -44,7 +44,7 @@ def plateau_de_jeu_9(version):
 
         for x in range(FENETRE_X // 3 + p, FENETRE_X // 3 + taille_plateau - p + 1,
                        taille_plateau // 2 - p):
-            for y in range(FENETRE_Y // 5 + p, FENETRE_Y // 5 + taille_plateau - p + 100,
+            for y in range(FENETRE_Y // 5 + p, FENETRE_Y // 5 + taille_plateau - p + 1,
                            taille_plateau // 2 - p):
 
                 if not (x == FENETRE_X // 3 + taille_plateau // 2
@@ -85,6 +85,7 @@ def intersection(liste_points_possibles, tour_jeu, tev):
                         tag='point_survolé')
 
             if tev == "ClicGauche":
+
                 joueur = tour_joueur(tour_jeu)
                 fltk.cercle(x_point, y_point, rayon_pion,
                             couleur=joueur,
@@ -92,7 +93,6 @@ def intersection(liste_points_possibles, tour_jeu, tev):
                             tag='')
 
                 print(x_point, y_point)
-
                 tour_jeu += 1
 
     return tour_jeu
