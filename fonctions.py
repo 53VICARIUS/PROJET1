@@ -3,7 +3,6 @@ from variables import *
 
 
 def plateau_de_jeu_9(version):
-
     liste_points_possibles = []
 
     # Création des lignes
@@ -42,9 +41,11 @@ def plateau_de_jeu_9(version):
                            FENETRE_Y // 5 + taille_plateau - p,
                            epaisseur=epaisseur_trait)
 
-        for x in range(FENETRE_X // 3 + p, FENETRE_X // 3 + taille_plateau - p + 1,
+        for x in range(FENETRE_X // 3 + p,
+                       FENETRE_X // 3 + taille_plateau - p + 1,
                        taille_plateau // 2 - p):
-            for y in range(FENETRE_Y // 5 + p, FENETRE_Y // 5 + taille_plateau - p + 1,
+            for y in range(FENETRE_Y // 5 + p,
+                           FENETRE_Y // 5 + taille_plateau - p + 1,
                            taille_plateau // 2 - p):
 
                 if not (x == FENETRE_X // 3 + taille_plateau // 2
@@ -63,8 +64,12 @@ def interface():
     dd = 4
 
 
-def tour_joueur(tour_jeu):
+# Pour trier la liste_points_possibles plus tard
+def sort():
+    dd = 2
 
+
+def tour_joueur(tour_jeu):
     if tour_jeu % 2 == 0:
         joueur = 'white'
         return joueur
@@ -74,7 +79,6 @@ def tour_joueur(tour_jeu):
 
 
 def intersection(liste_points_possibles, tour_jeu, tev):
-
     for i in range(len(liste_points_possibles)):
         x_point, y_point = liste_points_possibles[i]
 
@@ -85,7 +89,6 @@ def intersection(liste_points_possibles, tour_jeu, tev):
                         tag='point_survolé')
 
             if tev == "ClicGauche":
-
                 joueur = tour_joueur(tour_jeu)
                 fltk.cercle(x_point, y_point, rayon_pion,
                             couleur=joueur,
@@ -98,7 +101,6 @@ def intersection(liste_points_possibles, tour_jeu, tev):
     return tour_jeu
 
 
-
 def efface_intersection_survolee():
     fltk.efface('point_survolé')
 
@@ -106,15 +108,14 @@ def efface_intersection_survolee():
 def intersection_survolee(x_point, y_point):
     if fltk.abscisse_souris() > x_point - rayon_intersection \
     and fltk.ordonnee_souris() > y_point - rayon_intersection \
-    and fltk.abscisse_souris() < x_point + rayon_intersection \
-    and fltk.ordonnee_souris() < y_point + rayon_intersection:
+            and fltk.abscisse_souris() < x_point + rayon_intersection \
+            and fltk.ordonnee_souris() < y_point + rayon_intersection:
         return True
 
     return False
 
 
 def affichage():
-
     tour_jeu = 0
 
     fltk.cree_fenetre(FENETRE_X, FENETRE_Y)
