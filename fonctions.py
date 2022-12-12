@@ -63,11 +63,17 @@ def interface():
     dd = 4
 
 
-def tour_joueur():
-    dd = 2
+def tour_joueur(tour_jeu):
+
+    if tour_jeu % 2 == 0:
+        joueur = 'white'
+        return joueur
+    else:
+        joueur = 'black'
+        return joueur
 
 
-def intersection(liste_points_possibles, tev):
+def intersection(liste_points_possibles, tour_jeu, tev):
 
     for i in range(len(liste_points_possibles)):
         x_point, y_point = liste_points_possibles[i]
@@ -79,10 +85,19 @@ def intersection(liste_points_possibles, tev):
                         tag='point_survolé')
 
             if tev == "ClicGauche":
-                print("clic")
+                joueur = 'black'
+                # joueur = tour_joueur(tour_jeu)
+                fltk.cercle(x_point, y_point, rayon_pion,
+                            couleur=joueur,
+                            remplissage=joueur,
+                            tag='')
 
+                print(x_point, y_point)
 
-            return True
+                # tour_jeu += 1
+
+            return tour_jeu
+
 
 
 def efface_intersection_survolee():
@@ -101,6 +116,8 @@ def intersection_survolee(x_point, y_point):
 
 def affichage():
 
+    tour_jeu = 0
+
     fltk.cree_fenetre(FENETRE_X, FENETRE_Y)
     # Pour le fond
     fltk.rectangle(-10, -10, 9000, 9000, remplissage='#bababa')
@@ -113,11 +130,10 @@ def affichage():
         tev = fltk.type_ev(ev)
 
         efface_intersection_survolee()
-        intersection(liste_points_possibles, tev)
+        tour_jeu = intersection(liste_points_possibles, tour_jeu, tev)
 
         if tev == "Quitte":
             continuer = False
-
 
         fltk.mise_a_jour()
     fltk.ferme_fenetre()
