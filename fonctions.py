@@ -92,6 +92,7 @@ def sort():
 
 
 def tour_joueur(tour_jeu):
+
     if tour_jeu % 2 == 0:
         joueur = 'white'
         return joueur
@@ -100,7 +101,9 @@ def tour_joueur(tour_jeu):
         return joueur
 
 
-def intersection(liste_points_possibles, tour_jeu, tev):
+def intersection(liste_points_possibles, tour_jeu, white_cpt, black_cpt,
+                 liste_tags_white, liste_tags_black, tev):
+
     for i in range(len(liste_points_possibles)):
         if len(liste_points_possibles[i]) != 0:
             x_point, y_point = liste_points_possibles[i]
@@ -114,15 +117,34 @@ def intersection(liste_points_possibles, tour_jeu, tev):
                 if tev == "ClicGauche":
                     liste_points_possibles[i] = []
                     joueur = tour_joueur(tour_jeu)
-                    fltk.cercle(x_point, y_point, rayon_pion,
-                                couleur=joueur,
-                                remplissage=joueur,
-                                tag='')
+
+                    if joueur == 'white':
+                        white_cpt += 1
+
+                        tag = f'pion_{joueur}_{white_cpt}'
+                        fltk.cercle(x_point, y_point, rayon_pion,
+                                    couleur=joueur,
+                                    remplissage=joueur,
+                                    tag=tag)
+                        liste_tags_white.append([tag, (x_point, y_point)])
+
+                    else:
+                        black_cpt += 1
+
+                        tag = f'pion_{joueur}_{black_cpt}'
+                        fltk.cercle(x_point, y_point, rayon_pion,
+                                    couleur=joueur,
+                                    remplissage=joueur,
+                                    tag=tag)
+                        liste_tags_black.append([tag, (x_point, y_point)])
+
+
 
                     print(x_point, y_point)
+                    print(liste_tags_white, liste_tags_black)
                     tour_jeu += 1
 
-    return tour_jeu, liste_points_possibles
+    return tour_jeu, white_cpt, black_cpt, liste_tags_white, liste_tags_black
 
 def adjacence(test):
     dico_adjacence = {(300,120):[(450,120),(300,270)], (450,120):[(300,120),(450,170),(600,120)], (600,120):[(450,120),(600,270)],
@@ -152,7 +174,12 @@ def intersection_survolee(x_point, y_point):
 
 
 def affichage():
+
     tour_jeu = 0
+    white_cpt = 0
+    black_cpt = 0
+    liste_tags_white = []
+    liste_tags_black = []
 
     fltk.cree_fenetre(FENETRE_X, FENETRE_Y)
     # Pour le fond
@@ -168,8 +195,9 @@ def affichage():
 
         interface(tour_jeu)
         efface_intersection_survolee()
-        tour_jeu, liste_points_possibles = \
-            intersection(liste_points_possibles, tour_jeu, tev)
+        tour_jeu, white_cpt, black_cpt, liste_tags_white, liste_tags_black = \
+            intersection(liste_points_possibles, tour_jeu, white_cpt,
+                         black_cpt, liste_tags_white, liste_tags_black, tev)
 
         if tev == "Quitte":
             continuer = False
