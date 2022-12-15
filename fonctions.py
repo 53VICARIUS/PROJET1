@@ -50,23 +50,40 @@ def plateau_de_jeu_9(version):
 
                 if not (x == FENETRE_X // 3 + taille_plateau // 2
                         and y == FENETRE_Y // 5 + taille_plateau // 2):
+
                     fltk.cercle(x, y, rayon_intersection,
                                 couleur='black',
                                 remplissage='black')
-
                     liste_points_possibles.append((x, y))
 
     print(liste_points_possibles)
     return liste_points_possibles
 
 
-def interface():
+def interface(tour_jeu):
 
-    fltk.rectangle(FENETRE_X // 8,
+    # Variable du joueur à qui il est le tour de jouer
+    joueur = tour_joueur(tour_jeu)
+
+    # Création du rectangle
+    fltk.rectangle(FENETRE_X // 5,
                    FENETRE_Y - FENETRE_Y // 4,
-                   FENETRE_X - FENETRE_X // 8,
+                   FENETRE_X - FENETRE_X // 5,
                    FENETRE_Y - FENETRE_Y // 30,
-                   couleur = 'black')
+                   couleur='black')
+
+    # Affiche le pion du joueur actif
+    fltk.cercle(FENETRE_X - FENETRE_X // 3,
+                FENETRE_Y - FENETRE_Y // 6.75,
+                50,
+                couleur=joueur,
+                remplissage=joueur,
+                tag='pion_joueur_actif')
+
+    fltk.texte(FENETRE_X - FENETRE_X // 1.5,
+               FENETRE_Y - FENETRE_Y // 5.5,
+               chaine='TOUR',
+               taille=45)
 
 
 # Pour trier la liste_points_possibles plus tard
@@ -142,7 +159,6 @@ def affichage():
     fltk.rectangle(-10, -10, 9000, 9000, remplissage='#bababa')
 
     liste_points_possibles = plateau_de_jeu_9('A')
-    interface()
 
     continuer = True
 
@@ -150,6 +166,7 @@ def affichage():
         ev = fltk.donne_ev()
         tev = fltk.type_ev(ev)
 
+        interface(tour_jeu)
         efface_intersection_survolee()
         tour_jeu, liste_points_possibles = \
             intersection(liste_points_possibles, tour_jeu, tev)
