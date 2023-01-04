@@ -1,91 +1,186 @@
 import fltk
 from variables import *
 
-FENETRE_X = 900
-FENETRE_Y = 600
-taille_plateau = 300
-rayon_intersection = 5
-rayon_pion = 10
-epaisseur_trait = 2
-tour = 0 # tour ?
-pions_version = 9
+##############################################################################
+# Fonctions chargées de la création des éléments sur l'interface             #
+##############################################################################
 
-dico_pions ={"white":[],"black":[]}
+def plateau_de_jeu_9():
 
+    global liste_coups_possibles
 
-def plateau_de_jeu_9(version):
-    liste_points_possibles = []
-
-    # Création des lignes
+    # Création des lignes du plateau
     fltk.ligne(FENETRE_X // 3,
-               FENETRE_Y // 5 + taille_plateau // 2,
-               FENETRE_X // 3 + taille_plateau // 3,
-               FENETRE_Y // 5 + taille_plateau // 2,
-               epaisseur=epaisseur_trait,
+               FENETRE_Y // 5 + TAILLE_PLATEAU // 2,
+               FENETRE_X // 3 + TAILLE_PLATEAU // 3,
+               FENETRE_Y // 5 + TAILLE_PLATEAU // 2,
+               epaisseur=2,
                couleur="black")
-    fltk.ligne(FENETRE_X // 3 + taille_plateau // 2,
+    fltk.ligne(FENETRE_X // 3 + TAILLE_PLATEAU // 2,
                FENETRE_Y // 5,
-               FENETRE_X // 3 + taille_plateau // 2,
-               FENETRE_Y // 5 + taille_plateau // 3,
-               epaisseur=epaisseur_trait,
+               FENETRE_X // 3 + TAILLE_PLATEAU // 2,
+               FENETRE_Y // 5 + TAILLE_PLATEAU // 3,
+               epaisseur=2,
                couleur="black")
-    fltk.ligne(FENETRE_X // 3 + (taille_plateau // 3) * 2,
-               FENETRE_Y // 5 + taille_plateau // 2,
-               FENETRE_X // 3 + taille_plateau,
-               FENETRE_Y // 5 + taille_plateau // 2,
-               epaisseur=epaisseur_trait,
+    fltk.ligne(FENETRE_X // 3 + (TAILLE_PLATEAU // 3) * 2,
+               FENETRE_Y // 5 + TAILLE_PLATEAU // 2,
+               FENETRE_X // 3 + TAILLE_PLATEAU,
+               FENETRE_Y // 5 + TAILLE_PLATEAU // 2,
+               epaisseur=2,
                couleur="black")
-    fltk.ligne(FENETRE_X // 3 + taille_plateau // 2,
-               FENETRE_Y // 5 + taille_plateau,
-               FENETRE_X // 3 + taille_plateau // 2,
-               FENETRE_Y // 5 + (taille_plateau // 3) * 2,
-               epaisseur=epaisseur_trait,
+    fltk.ligne(FENETRE_X // 3 + TAILLE_PLATEAU // 2,
+               FENETRE_Y // 5 + TAILLE_PLATEAU,
+               FENETRE_X // 3 + TAILLE_PLATEAU // 2,
+               FENETRE_Y // 5 + (TAILLE_PLATEAU // 3) * 2,
+               epaisseur=2,
                couleur="black")
 
-    for p in range(0, taille_plateau // 3 + 1, taille_plateau // 6):
+    # Boucle chargée de créer les differents carrés et les points du plateau
+    for p in range(0, TAILLE_PLATEAU // 3 + 1, TAILLE_PLATEAU // 6):
 
-        # Création des carrés : 'range(3)' pour trois carrés
+        # Création des carrés
         for carre in range(3):
             fltk.rectangle(FENETRE_X // 3 + p,
                            FENETRE_Y // 5 + p,
-                           FENETRE_X // 3 + taille_plateau - p,
-                           FENETRE_Y // 5 + taille_plateau - p,
-                           epaisseur=epaisseur_trait)
+                           FENETRE_X // 3 + TAILLE_PLATEAU - p,
+                           FENETRE_Y // 5 + TAILLE_PLATEAU - p,
+                           epaisseur=EPAISSEUR_LIGNE)
 
+        # Création des points situés aux intersections du plateau
         for x in range(FENETRE_X // 3 + p,
-                       FENETRE_X // 3 + taille_plateau - p + 1,
-                       taille_plateau // 2 - p):
+                       FENETRE_X // 3 + TAILLE_PLATEAU - p + 1,
+                       TAILLE_PLATEAU // 2 - p):
             for y in range(FENETRE_Y // 5 + p,
-                           FENETRE_Y // 5 + taille_plateau - p + 1,
-                           taille_plateau // 2 - p):
+                           FENETRE_Y // 5 + TAILLE_PLATEAU - p + 1,
+                           TAILLE_PLATEAU // 2 - p):
 
-                if not (x == FENETRE_X // 3 + taille_plateau // 2
-                        and y == FENETRE_Y // 5 + taille_plateau // 2):
-                    fltk.cercle(x, y, rayon_intersection,
+                # Détecte si le point est au milieu du terrain : si oui, ne
+                # le place pas
+                if not (x == FENETRE_X // 3 + TAILLE_PLATEAU // 2
+                   and y == FENETRE_Y // 5 + TAILLE_PLATEAU // 2):
+
+                    fltk.cercle(x, y, RAYON_INTERSECTION,
                                 couleur='black',
                                 remplissage='black')
+                    # Ajoute les coordonnées à la liste des intersections
+                    liste_intersections.append((x, y))
 
-                    liste_points_possibles.append((x, y))
+    # Ajoute également les coordonnées à la liste des coups possibles
+    liste_coups_possibles = liste_intersections
 
-    print(liste_points_possibles)
-    return liste_points_possibles
 
 
 def interface():
 
-    fltk.rectangle(FENETRE_X // 8,
+    # Création de la "boite de texte"
+    fltk.rectangle(FENETRE_X // 5,
                    FENETRE_Y - FENETRE_Y // 4,
-                   FENETRE_X - FENETRE_X // 8,
+                   FENETRE_X - FENETRE_X // 5,
                    FENETRE_Y - FENETRE_Y // 30,
-                   couleur = 'black')
+                   epaisseur=EPAISSEUR_LIGNE,
+                   couleur='black')
+
+    # Création du plateau de jeu
+    plateau_de_jeu_9()
+
+    # Création du texte "TOUR"
+    fltk.texte(FENETRE_X - FENETRE_X // 1.5,
+               FENETRE_Y - FENETRE_Y // 5.5,
+               chaine='TOUR',
+               taille=45)
 
 
-# Pour trier la liste_points_possibles plus tard
-def sort():
-    dd = 2
+def affichage_tour():
 
+    joueur = tour_joueur(tour_jeu)
+
+    fltk.cercle(FENETRE_X - FENETRE_X // 3,
+                FENETRE_Y - FENETRE_Y // 6.75,
+                50,
+                couleur=joueur,
+                remplissage=joueur,
+                tag='pion_joueur_actif')
+
+
+def affichage_instruction():
+
+    # tour_jeu sera inférieur à 18 durant tout le long de la phase 1 (car
+    # 18 pions n'auront pas été posés
+    if tour_jeu < 18:
+
+        # Création de l'instruction
+        fltk.texte(FENETRE_X - FENETRE_X // 2,
+                   FENETRE_Y - FENETRE_Y // 1.1,
+                   chaine='POSEZ UN PION',
+                   taille=34,
+                   ancrage='center',
+                   tag='instruction')
+
+    elif pion_selectione:
+
+        # Création de l'instruction
+        fltk.texte(FENETRE_X - FENETRE_X // 2,
+                   FENETRE_Y - FENETRE_Y // 1.1,
+                   chaine='CHOISISSEZ UN PION À DEPLACER',
+                   taille=34,
+                   ancrage='center',
+                   tag='instruction')
+
+    else:
+
+        # Création de l'instruction
+        fltk.texte(FENETRE_X - FENETRE_X // 2,
+                   FENETRE_Y - FENETRE_Y // 1.1,
+                   chaine='CHOISISSEZ UN PION À DEPLACER',
+                   taille=34,
+                   ancrage='center',
+                   tag='instruction')
+
+
+def efface_instruction():
+    fltk.efface('instruction')
+
+
+def cree_pion(i, x, y):
+
+    global pions_blancs, pions_noirs
+
+    joueur = tour_joueur(tour_jeu)
+    liste_coups_possibles[i] = []  # Rend l'intersection indisponible
+
+    if joueur == 'white':
+        tag = f'pion_{joueur}_{pions_blancs}'
+        fltk.cercle(x, y, RAYON_PION,
+                    couleur=joueur,
+                    remplissage=joueur,
+                    tag=tag)
+
+        liste_pions_blanc.append([tag, (x, y)])
+        pions_blancs += 1
+
+    else:
+        tag = f'pion_{joueur}_{pions_noirs}'
+        fltk.cercle(x, y, RAYON_PION,
+                    couleur=joueur,
+                    remplissage=joueur,
+                    tag=tag)
+
+        liste_pions_noir.append([tag, (x, y)])
+        pions_noirs += 1
+
+
+
+##############################################################################
+# Fonctions chargées de calculs                                              #
+##############################################################################
 
 def tour_joueur(tour_jeu):
+    """
+    Détermine le joueur à qui il est le tour de jouer.
+    :param tour_jeu:
+    :return:
+    """
+
     if tour_jeu % 2 == 0:
         joueur = 'white'
         return joueur
@@ -93,121 +188,179 @@ def tour_joueur(tour_jeu):
         joueur = 'black'
         return joueur
 
+##############################################################################
+# Fonctions chargées de détecter (?)                                         #
+##############################################################################
 
 
 
+##############################################################################
+# Fonctions chargées des interactions avec l'interface                       #
+##############################################################################
 
-def intersection(liste_points_possibles, tour_jeu, tev):
-    for i in range(len(liste_points_possibles)):
-        if len(liste_points_possibles[i]) != 0:
-            x_point, y_point = liste_points_possibles[i]
+def intersection_survolee(x, y):
 
-            if intersection_survolee(x_point, y_point):
-                fltk.cercle(x_point, y_point, rayon_intersection,
+    if fltk.abscisse_souris() > x - RAYON_INTERSECTION \
+    and fltk.ordonnee_souris() > y - RAYON_INTERSECTION \
+    and fltk.abscisse_souris() < x + RAYON_INTERSECTION \
+    and fltk.ordonnee_souris() < y + RAYON_INTERSECTION:
+        return True
+    return False
+
+
+def efface_intersection_survolee():
+    """
+    Si une intersection est survolée, elle est surlignée en bleue. Cette
+    fonction est chargée d'effacer le survol une fois que la souris quitte la
+    hitbox de l'intersection.
+    (à changer en survol tout court parce que)
+
+    :return: None
+    """
+
+    fltk.efface('point_survolé')
+
+
+def intersection_valide(tev):
+    """
+    Fonctions regroupant tous les types d'interactions avec une
+    intersection valide (= qui n'est pas occupée par un pion). Elle est
+    chargée d'executer certains codes si les conditions sont remplies.
+    :param tev:
+    :return:
+    """
+
+    global tour_jeu
+
+    for i in range(len(liste_coups_possibles)):
+        if len(liste_coups_possibles[i]) != 0:
+            x, y = liste_coups_possibles[i]
+
+            if intersection_survolee(x, y):
+                fltk.cercle(x, y, RAYON_INTERSECTION,
                             couleur='blue',
                             remplissage='blue',
                             tag='point_survolé')
 
                 if tev == "ClicGauche":
-                    liste_points_possibles[i] = []
-                    joueur = tour_joueur(tour_jeu)
-                    fltk.cercle(x_point, y_point, rayon_pion,
-                                couleur=joueur,
-                                remplissage=joueur,
-                                tag='')
-                    dico_pions[joueur].append((x_point, y_point))
+                    cree_pion(i, x, y)
                     tour_jeu += 1
 
-    return tour_jeu, liste_points_possibles
 
-def adjacence(test):
-    dico_adjacence = {(300,120):[(450,120),(300,270)], (450,120):[(300,120),(450,170),(600,120)], (600,120):[(450,120),(600,270)],
-                      (350,170):[(450,170),(350,270)], (450,170):[(450,120),(350,170),(550,170),(450,220)] ,(550,170):[(450,170),(550,270)],
-                      (400,220):[(400,270),(450,220)], (450,220):[(400,220),(450,170),(500,220)], (500,220):[(450,220),(500,270)],
-                      (300,270):[(300,120),(350,270),(300,420)], (350,270):[(300,270),(350,170),(400,270),(350,370)], (400,270):[(400,220),(350,270),(400,320)],
-                      (500,270):[(500,220),(550,270),(500,320)], (550,270):[(500,270),(550,170),(600,270),(550,370)], (600,270):[(600,120),(550,270),(600,420)],
-                      (400,320):[(400,270),(450,320)], (450,320):[(400,320),(500,320),(450,370)], (500,320):[(450,320),(500,270)],
-                      (350,370):[(350,270),(450,370)], (450,370):[(350,370),(450,320),(550,370),(450,420)], (550,370):[(450,370),(550,270)],
-                      (300,420):[(300,270),(450,420)], (450,420):[(300,420),(450,370),(600,420)], (600,420):[(450,420),(600,270)],
-                      }
-    # Retourne le dictionnaire d'adjacence de chaque points. EX: dico_adjacence[(x,y)] = [(a,b),(a',b')]
-    return dico_adjacence[test]
+def deplacement_pion(tev):
 
-
-def efface_intersection_survolee():
-    fltk.efface('point_survolé')
-
-
-def intersection_survolee(x_point, y_point):
-    if fltk.abscisse_souris() > x_point - rayon_intersection \
-    and fltk.ordonnee_souris() > y_point - rayon_intersection \
-    and fltk.abscisse_souris() < x_point + rayon_intersection \
-    and fltk.ordonnee_souris() < y_point + rayon_intersection:
-        return True
-    return False
-
-
-def premiere_partie(tour_jeu):
-    return tour_jeu <= (2*pions_version)-1
-
-
-
-def clic_pion(tour_jeu,tev):
+    global liste_pions_blanc, liste_pions_noirs, liste_coups_possibles, \
+           pion_selectione
     joueur = tour_joueur(tour_jeu)
-    for i in range(len(dico_pions[joueur])):
-        x_point, y_point = dico_pions[joueur][i]
 
-        if intersection_survolee(x_point, y_point):
-            if tev == "ClicGauche":
-                temp = x_point, y_point
-                return temp
+    if joueur == 'white':
+        for i in range(len(liste_pions_blanc)):
+            x, y = liste_pions_blanc[i][1]
+
+            if intersection_survolee(x, y):
+                fltk.cercle(x, y, RAYON_INTERSECTION * 2,
+                            couleur='green',
+                            epaisseur=5,
+                            tag='pion_survolé')
+
+                if tev == "ClicGauche":
+                    pion_selectionne = True
+                    efface_cercle_vert()
+                    efface_voisins()
+
+                    tag_pion_selectionne = liste_pions_blanc[i][0]
+
+                    for cle in dico_adjacence:
+                        if cle == liste_pions_blanc[i][1]:
+                            liste_voisins = dico_adjacence[cle]
+
+                            for i in range(len(liste_voisins)):
+                                if liste_voisins[i] in liste_coups_possibles:
+                                    x, y = liste_voisins[i]
+                                    fltk.cercle(x, y, RAYON_INTERSECTION,
+                                                couleur='green',
+                                                remplissage='green',
+                                                tag='mouvements_possibles')
+
+                                if intersection_survolee(x, y):
+                                    fltk.cercle(x, y,
+                                                RAYON_INTERSECTION,
+                                                couleur='blue',
+                                                remplissage='green',
+                                                tag='point_survolé')
+
+                                    if tev == "ClicGauche" \
+                                            and intersection_survolee(x, y):
+                                        liste_coups_possibles.append(
+                                            liste_pions_blanc[i][1])
+                                        liste_pions_blanc[i][1] = (x, y)
+                                        fltk.efface('mouvements_possibles')
+                                        fltk.efface(tag_pion_selectionne)
+                                        cree_pion(i, x, y)
+                                        pion_selectionne = False
+
+    else:
+        for i in range(len(liste_pions_noir)):
+            x, y = liste_pions_noir[i][1]
+
+            if intersection_survolee(x, y):
+                fltk.cercle(x, y, RAYON_INTERSECTION,
+                            couleur='green',
+                            epaisseur=5,
+                            tag='point_survolé')
+
+                if tev == "ClicGauche":
+                    liste_pions_noirs[1][i] = [x, y]
 
 
 
-def bouger_pion(tour_jeu,tev):
-    # fonction de la Partie 2 #
-    joueur = tour_joueur(tour_jeu)
-    temp =
-    for i in range(len(dico_pions[joueur])):
-        x_point, y_point = dico_pions[joueur][i]
+def intersection(tev):
 
-        if intersection_survolee(x_point, y_point):
-            if tev == "ClicGauche":
-                temp = x_point, y_point
+    if tour_jeu < 18:
+        intersection_valide(tev)
+
+    else:
+        deplacement_pion(tev)
 
 
+def efface_cercle_vert():
+    fltk.efface('pion_survolé')
+def efface_voisins():
+    fltk.efface('mouvements_possibles')
 
+
+##############################################################################
+# Fonction principale (jeu)                                                  #
+##############################################################################
 
 def affichage():
-    tour_jeu = 0
 
     fltk.cree_fenetre(FENETRE_X, FENETRE_Y)
-    # Pour le fond
+
+    # Pour le fond !TEMP
     fltk.rectangle(-10, -10, 9000, 9000, remplissage='#bababa')
 
-    liste_points_possibles = plateau_de_jeu_9('A')
     interface()
 
-    continuer = True
+    while True:
 
-    while continuer:
         ev = fltk.donne_ev()
         tev = fltk.type_ev(ev)
 
-        if premiere_partie(tour_jeu):
-            efface_intersection_survolee()
-            tour_jeu, liste_points_possibles = \
-                intersection(liste_points_possibles, tour_jeu, tev)
-
-        if tour_jeu >= 18:
-            #clic_pion(tour_jeu,tev):
-            #bouger_pion(liste_points_possibles,tour_jeu,tev)
-            print("rien")
-        if tev == "Touche":
-            if fltk.touche(ev) == "a":
-                print(dico_pions)
         if tev == "Quitte":
-            continuer = False
+            break
+
+        efface_intersection_survolee()
+        efface_instruction()
+
+        intersection(tev)
+
+        affichage_tour()
+        affichage_instruction()
+
+
 
         fltk.mise_a_jour()
     fltk.ferme_fenetre()
+
+affichage()
