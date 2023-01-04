@@ -121,7 +121,7 @@ def affichage_instruction():
         # Création de l'instruction
         fltk.texte(FENETRE_X - FENETRE_X // 2,
                    FENETRE_Y - FENETRE_Y // 1.1,
-                   chaine='CHOISISSEZ UN PION À DEPLACER',
+                   chaine='CHOISISSEZ UN PION À DhPLACER',
                    taille=34,
                    ancrage='center',
                    tag='instruction')
@@ -262,11 +262,10 @@ def deplacement_pion(tev):
                 fltk.cercle(x, y, RAYON_INTERSECTION * 2,
                             couleur='green',
                             epaisseur=5,
-                            tag='pion_survolé')
+                            tag='point_survolé')
 
                 if tev == "ClicGauche":
                     pion_selectionne = True
-
                     tag_pion_selectionne = liste_pions_blanc[i][0]
 
                     for cle in dico_adjacence:
@@ -274,20 +273,23 @@ def deplacement_pion(tev):
                             liste_voisins = dico_adjacence[cle]
 
                             for i in range(len(liste_voisins)):
-                                x, y = liste_voisins[i]
-                                fltk.cercle(x, y, RAYON_INTERSECTION,
+                                x2, y2 = liste_voisins[i]
+                                fltk.cercle(x2, y2, RAYON_INTERSECTION,
                                             couleur='green',
                                             remplissage='green',
                                             tag='mouvements_possibles')
 
-                                if intersection_survolee(x, y):
-                                    fltk.cercle(x, y,
+                                if intersection_survolee(x2, y2):
+                                    fltk.cercle(x2, y2,
                                                 RAYON_INTERSECTION,
                                                 couleur='blue',
-                                                remplissage='green',
+                                                remplissage='blue',
                                                 tag='point_survolé')
 
-                                    if tev == "ClicGauche" \
+                                    ev = fltk.donne_ev()
+                                    tev2 = fltk.type_ev(ev)
+
+                                    if tev2 == "ClicDroite" \
                                             and intersection_survolee(x, y):
                                         liste_coups_possibles.append(
                                             liste_pions_blanc[i][1])
