@@ -14,7 +14,7 @@ liste_pions_noir = []
 tour_jeu = 0
 pions_blancs = 0
 pions_noirs = 0
-pion_selectione = False
+pion_selectionne = False
 dico_adjacence = {
     (300, 120): [(450, 120), (300, 270)],
     (450, 120): [(300, 120), (450, 170), (600, 120)],
