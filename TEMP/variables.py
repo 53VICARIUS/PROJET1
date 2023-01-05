@@ -9,7 +9,7 @@ RAYON_PION = 10
 # Variables relatives au jeu #
 liste_intersections = []  # Cf doc
 liste_coups_possibles = []  # Cf doc
-liste_pions_blanc = []
+liste_pions_blancs = []
 liste_pions_noir = []
 tour_jeu = 0
 pions_blancs = 0
@@ -38,3 +38,5 @@ dico_adjacence = {
     (300, 420): [(300, 270), (450, 420)],
     (450, 420): [(300, 420), (450, 370), (600, 420)],
     (600, 420): [(450, 420), (600, 270)]}
+
+dico_plateau = {}
