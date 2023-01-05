@@ -292,7 +292,7 @@ def intersection_valide(tev):
 
 def mouvement_pion(tev):
 
-    global dico_plateau, pion_selectionne
+    global dico_plateau, pion_selectionne, tour_jeu
 
     joueur = tour_joueur(tour_jeu)
 
@@ -340,7 +340,6 @@ def mouvement_pion(tev):
                                                     tag='point_survolé')
 
                                         if tev == "ClicGauche":
-
                                             dico_plateau[cle] = False
                                             dico_plateau[(x2, y2)] = etat
 
@@ -352,6 +351,8 @@ def mouvement_pion(tev):
                                                         remplissage=joueur,
                                                         tag=etat)
                                             pion_selectionne = False
+                                            tour_jeu += 1
+                                            print(dico_plateau)
 
 
 def intersection(tev):
