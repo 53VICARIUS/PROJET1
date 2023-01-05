@@ -193,6 +193,15 @@ def tour_joueur(tour_jeu):
 
 
 
+
+def moulins():
+    dd = 2
+
+
+def moulins():
+
+    dd = 2
+
 ##############################################################################
 # Fonctions chargées des interactions avec l'interface                       #
 ##############################################################################
