@@ -101,21 +101,41 @@ def interface():
 
 def affichage_tour():
 
-    joueur = tour_joueur(tour_jeu)
+    if moulin_cree:
+        joueur = tour_joueur(tour_jeu - 1)
 
-    fltk.cercle(FENETRE_X - FENETRE_X // 3,
-                FENETRE_Y - FENETRE_Y // 6.75,
-                50,
-                couleur=joueur,
-                remplissage=joueur,
-                tag='pion_joueur_actif')
+        fltk.cercle(FENETRE_X - FENETRE_X // 3,
+                    FENETRE_Y - FENETRE_Y // 6.75,
+                    50,
+                    couleur=joueur,
+                    remplissage=joueur,
+                    tag='pion_joueur_actif')
+
+    else:
+        joueur = tour_joueur(tour_jeu)
+
+        fltk.cercle(FENETRE_X - FENETRE_X // 3,
+                    FENETRE_Y - FENETRE_Y // 6.75,
+                    50,
+                    couleur=joueur,
+                    remplissage=joueur,
+                    tag='pion_joueur_actif')
 
 
 def affichage_instruction():
 
+    if moulin_cree:
+        # Création de l'instruction
+        fltk.texte(FENETRE_X - FENETRE_X // 2,
+                   FENETRE_Y - FENETRE_Y // 1.1,
+                   chaine='CHOISISSEZ UN PION À SUPPRIMER',
+                   taille=34,
+                   ancrage='center',
+                   tag='instruction')
+
     # tour_jeu sera inférieur à 18 durant tout le long de la phase 1 (car
     # 18 pions n'auront pas été posés
-    if tour_jeu < 18:
+    elif tour_jeu < 18:
 
         # Création de l'instruction
         fltk.texte(FENETRE_X - FENETRE_X // 2,
@@ -124,6 +144,7 @@ def affichage_instruction():
                    taille=34,
                    ancrage='center',
                    tag='instruction')
+
 
     elif pion_selectionne:
 
@@ -199,6 +220,7 @@ def tour_joueur(tour_jeu):
     if tour_jeu % 2 == 0:
         joueur = 'white'
         return joueur
+
     else:
         joueur = 'black'
         return joueur
@@ -207,31 +229,77 @@ def tour_joueur(tour_jeu):
 # Fonctions chargées de détecter (?)                                         #
 ##############################################################################
 
-def moulin_vertical():
+def get_joueur_etat(etat):
 
-    # Pions blancs
-    for i in range(len(liste_pions_blancs)):
-        coordonnees_pion = liste_pions_blancs[i][1]
+    joueur = etat.split('_')[1]
+    return joueur
 
-        for cle in dico_adjacence:
-            if cle == coordonnees_pion:
+
+def moulin():
+
+    global moulin_cree, tour_jeu, cooldown
+
+    if cooldown == 0:
+
+        for cle in dico_plateau:
+            etat = dico_plateau[cle]
+
+            if isinstance(etat, str):
+                x, y = cle
+                joueur = get_joueur_etat(etat)
                 liste_voisins = dico_adjacence[cle]
 
-        for j in range(len(liste_pions_blancs)):
-            x, y = liste_pions_blancs[j][1]
+                for voisin in liste_voisins:
+                    etat2 = dico_plateau[voisin]
 
-            for k in range(len(liste_voisins)):
-                x2, y2 = liste_voisins[k]
+                    if isinstance(etat2, str):
+                        x2, y2 = voisin
+                        joueur_voisin = get_joueur_etat(etat2)
 
-                if x == x2:
-                    coordonnees_pion = liste_voisins[k]
+                        if joueur == joueur_voisin:
+                            cle2 = voisin
+                            liste_voisins = dico_adjacence[cle2]
 
-                    for cle in dico_adjacence:
-                        if cle == coordonnees_pion:
-                            liste_voisins = dico_adjacence[cle]
+                            for voisin2 in liste_voisins:
+                                if voisin2 != cle:
+                                    etat3 = dico_plateau[voisin2]
 
-                    for l in range(len(liste_pions_blancs)):
-                        x, y = liste_pions_blancs[j][1]
+                                    if isinstance(etat3, str):
+                                        x3, y3 = voisin2
+                                        joueur_voisin2 = get_joueur_etat(etat3)
+
+                                        if joueur == joueur_voisin2:
+                                            if x == x2 == x3 \
+                                            or y == y2 == y3:
+                                                moulin_cree = True
+                                                cooldown += 1
+
+
+
+def supprime_pion(tev):
+
+    global moulin_cree, tour_jeu
+
+    cle = get_pion()
+    joueur = tour_joueur(tour_jeu - 1)
+
+    if type(cle) is tuple:
+        etat = dico_plateau[cle]
+
+        if joueur != etat.split('_')[1]:
+            x, y = cle
+
+            if intersection_survolee(x, y, RAYON_PION):
+                fltk.cercle(x, y, RAYON_INTERSECTION * 2,
+                            couleur='green',
+                            epaisseur=5,
+                            tag='point_survolé')
+
+                if tev == "ClicGauche":
+                    fltk.efface(etat)
+                    dico_plateau[cle] = False
+                    moulin_cree = False
+                    tev = None
 
 
 def deplacement_possible(liste_voisins):
@@ -269,10 +337,6 @@ def get_pion():
 
         if intersection_survolee(x, y, RAYON_PION):
             return coordonnee
-
-
-def moulin_horizontal():
-    dd = 2
 
 
 def moulins():
@@ -315,7 +379,7 @@ def intersection_valide(tev):
     :return:
     """
 
-    global tour_jeu
+    global tour_jeu, cooldown
 
     for cle in dico_plateau:
         x, y = cle
@@ -331,6 +395,11 @@ def intersection_valide(tev):
             if tev == "ClicGauche":
                 cree_pion(cle, x, y)
                 tour_jeu += 1
+
+                if cooldown != 0:
+                    cooldown -= 1
+
+                print(tour_jeu)
                 print(dico_plateau)
 
 
@@ -379,8 +448,7 @@ def mouvement_pion(tev):
 
             if pion_selectionne:
                 coord_pion_selectionne = cle
-                print(liste_voisins)
-                
+
                 for i in range(len(liste_voisins)):
                     voisin = liste_voisins[i]
                     x2, y2 = voisin
@@ -412,16 +480,22 @@ def mouvement_pion(tev):
                             pion_selectionne = False
                             tev = None
                             tour_jeu += 1
-                            print(dico_plateau)
 
 
 def intersection(tev):
 
-    if tour_jeu < 18:
+    if moulin_cree:
+        supprime_pion(tev)
+
+    elif tour_jeu < 18:
         intersection_valide(tev)
 
     else:
-        mouvement_pion(tev)
+        if moulin_cree:
+            supprime_pion(tev)
+
+        else:
+            mouvement_pion(tev)
 
 ##############################################################################
 # Fonction principale (jeu)                                                  #
@@ -444,6 +518,7 @@ def affichage():
         if tev == "Quitte":
             break
 
+        moulin()
         texte_interface()
         intersection(tev)
 

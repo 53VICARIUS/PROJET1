@@ -7,15 +7,16 @@ RAYON_INTERSECTION = 5  # Rayon des points situés aux intersections du plateau
 RAYON_PION = 10
 
 # Variables relatives au jeu #
-liste_intersections = []  # Cf doc
-liste_coups_possibles = []  # Cf doc
-liste_pions_blancs = []
-liste_pions_noir = []
+liste_intersections = []
 tour_jeu = 0
 pions_blancs = 0
 pions_noirs = 0
 pion_selectionne = False
+moulin_cree = False
 coord_pion_selectionne = None
+suppression_pion = False
+cooldown = 0
+
 dico_adjacence = {
     (300, 120): [(450, 120), (300, 270)],
     (450, 120): [(300, 120), (450, 170), (600, 120)],
