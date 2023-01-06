@@ -176,8 +176,6 @@ def cree_pion(cle, x, y):
         dico_plateau[cle] = tag
         pions_noirs += 1
 
-    # liste_coups_possibles[i] = tag
-
 ##############################################################################
 # Fonctions chargées de calculs                                              #
 ##############################################################################
@@ -323,14 +321,15 @@ def mouvement_pion(tev):
                             liste_voisins = dico_adjacence[cle2]
 
                             for i in range(len(liste_voisins)):
-                                etat2 = dico_plateau[liste_voisins[i]]
+                                voisin = liste_voisins[i]
+                                etat2 = dico_plateau[voisin]
 
                                 if isinstance(etat2, bool):
-                                    x2, y2 = liste_voisins[i]
+                                    x2, y2 = voisin
                                     fltk.cercle(x2, y2, RAYON_INTERSECTION,
                                                 couleur='green',
                                                 remplissage='green',
-                                                tag='mouvements_possibles')
+                                                tag='coups_possibles')
 
                                     if intersection_survolee(x2, y2):
                                         fltk.cercle(x2, y2,
@@ -338,12 +337,12 @@ def mouvement_pion(tev):
                                                     couleur='blue',
                                                     remplissage='blue',
                                                     tag='point_survolé')
+                                        print(pion_selectionne)
 
                                         if tev == "ClicGauche":
                                             dico_plateau[cle] = False
-                                            dico_plateau[(x2, y2)] = etat
-
-                                            fltk.efface('mouvements_possibles')
+                                            dico_plateau[voisin] = etat
+                                            fltk.efface('coups_possibles')
                                             fltk.efface('pion_sélectioné')
                                             fltk.efface(etat)
                                             fltk.cercle(x2, y2, RAYON_PION,
@@ -351,8 +350,7 @@ def mouvement_pion(tev):
                                                         remplissage=joueur,
                                                         tag=etat)
                                             pion_selectionne = False
-                                            tour_jeu += 1
-                                            print(dico_plateau)
+                                            tev = None
 
 
 def intersection(tev):
