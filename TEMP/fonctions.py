@@ -225,6 +225,22 @@ def moulin_vertical():
                         x, y = liste_pions_blancs[j][1]
 
 
+def deplacement_possible(liste_voisins):
+
+    cpt = 0
+    nombre_voisins = len(liste_voisins)
+
+    for voisin in liste_voisins:
+        etat = dico_adjacence[voisin]
+        if isinstance(etat, str):
+            cpt += 1
+
+    if cpt == nombre_voisins:
+        return False
+    else:
+        return True
+
+
 def moulin_horizontal():
     dd = 2
 
@@ -237,12 +253,12 @@ def moulins():
 # Fonctions chargées des interactions avec l'interface                       #
 ##############################################################################
 
-def intersection_survolee(x, y):
+def intersection_survolee(x, y, rayon):
 
-    if fltk.abscisse_souris() > x - RAYON_INTERSECTION \
-    and fltk.ordonnee_souris() > y - RAYON_INTERSECTION \
-    and fltk.abscisse_souris() < x + RAYON_INTERSECTION \
-    and fltk.ordonnee_souris() < y + RAYON_INTERSECTION:
+    if fltk.abscisse_souris() > x - rayon \
+    and fltk.ordonnee_souris() > y - rayon \
+    and fltk.abscisse_souris() < x + rayon \
+    and fltk.ordonnee_souris() < y + rayon:
         return True
     return False
 
@@ -275,7 +291,7 @@ def intersection_valide(tev):
         x, y = cle
         etat = dico_plateau[cle]
 
-        if intersection_survolee(x, y) \
+        if intersection_survolee(x, y, RAYON_INTERSECTION) \
         and not isinstance(etat, str):
             fltk.cercle(x, y, RAYON_INTERSECTION,
                         couleur='blue',
@@ -296,12 +312,22 @@ def mouvement_pion(tev):
 
     for cle in dico_plateau:
         etat = dico_plateau[cle]
+        liste_voisins = dico_adjacence[cle]
 
         if isinstance(etat, str):
             if joueur == etat.split('_')[1]:
                 x, y = cle
 
-                if intersection_survolee(x, y):
+                if intersection_survolee(x, y, RAYON_PION) \
+                and not deplacement_possible(liste_voisins):
+
+                    fltk.cercle(x, y, RAYON_INTERSECTION * 2,
+                                couleur='red',
+                                epaisseur=5,
+                                tag='point_survolé')
+
+                elif intersection_survolee(x, y, RAYON_PION) \
+                and deplacement_possible(liste_voisins):
                     fltk.cercle(x, y, RAYON_INTERSECTION * 2,
                                 couleur='green',
                                 epaisseur=5,
@@ -316,41 +342,39 @@ def mouvement_pion(tev):
                         pion_selectionne = True
 
                 if pion_selectionne:
-                    for cle2 in dico_adjacence:
-                        if cle2 == cle:
-                            liste_voisins = dico_adjacence[cle2]
 
-                            for i in range(len(liste_voisins)):
-                                voisin = liste_voisins[i]
-                                etat2 = dico_plateau[voisin]
+                    for i in range(len(liste_voisins)):
+                        voisin = liste_voisins[i]
+                        etat2 = dico_plateau[voisin]
 
-                                if isinstance(etat2, bool):
-                                    x2, y2 = voisin
-                                    fltk.cercle(x2, y2, RAYON_INTERSECTION,
-                                                couleur='green',
-                                                remplissage='green',
-                                                tag='coups_possibles')
+                        if isinstance(etat2, bool):
+                            x2, y2 = voisin
+                            fltk.cercle(x2, y2, RAYON_INTERSECTION,
+                                        couleur='green',
+                                        remplissage='green',
+                                        tag='coups_possibles')
 
-                                    if intersection_survolee(x2, y2):
-                                        fltk.cercle(x2, y2,
-                                                    RAYON_INTERSECTION,
-                                                    couleur='blue',
-                                                    remplissage='blue',
-                                                    tag='point_survolé')
-                                        print(pion_selectionne)
+                            if intersection_survolee(x2, y2,
+                                                     RAYON_INTERSECTION):
+                                fltk.cercle(x2, y2,
+                                            RAYON_INTERSECTION,
+                                            couleur='blue',
+                                            remplissage='blue',
+                                            tag='point_survolé')
 
-                                        if tev == "ClicGauche":
-                                            dico_plateau[cle] = False
-                                            dico_plateau[voisin] = etat
-                                            fltk.efface('coups_possibles')
-                                            fltk.efface('pion_sélectioné')
-                                            fltk.efface(etat)
-                                            fltk.cercle(x2, y2, RAYON_PION,
-                                                        couleur=joueur,
-                                                        remplissage=joueur,
-                                                        tag=etat)
-                                            pion_selectionne = False
-                                            tev = None
+                                if tev == "ClicGauche":
+                                    dico_plateau[cle] = False
+                                    dico_plateau[voisin] = etat
+                                    fltk.efface('coups_possibles')
+                                    fltk.efface('pion_sélectioné')
+                                    fltk.efface(etat)
+                                    fltk.cercle(x2, y2, RAYON_PION,
+                                                couleur=joueur,
+                                                remplissage=joueur,
+                                                tag=etat)
+                                    pion_selectionne = False
+                                    tev = None
+                                    tour_jeu += 1
 
 
 def intersection(tev):
